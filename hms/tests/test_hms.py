@@ -26,6 +26,42 @@ class TestHmsBase(TransactionCase):
         cls.drug = cls.env["product.product"].create(
             {"name": "Paracetamol 500mg", "type": "consu", "list_price": 5.0}
         )
+        if not cls.env["account.journal"].search([("type", "=", "sale")], limit=1):
+            income_account = cls.env["account.account"].create(
+                {
+                    "name": "HMS Test Income",
+                    "code": "HMS01",
+                    "account_type": "income",
+                }
+            )
+            cls.env["account.journal"].create(
+                {
+                    "name": "HMS Sales",
+                    "type": "sale",
+                    "code": "HMSJ",
+                    "default_account_id": income_account.id,
+                }
+            )
+            receivable = cls.env["account.account"].create(
+                {
+                    "name": "HMS Test Receivable",
+                    "code": "HMS02",
+                    "account_type": "asset_receivable",
+                }
+            )
+            payable = cls.env["account.account"].create(
+                {
+                    "name": "HMS Test Payable",
+                    "code": "HMS03",
+                    "account_type": "liability_payable",
+                }
+            )
+            cls.env.company.partner_id.write(
+                {
+                    "property_account_receivable_id": receivable.id,
+                    "property_account_payable_id": payable.id,
+                }
+            )
 
 
 class TestPatient(TestHmsBase):

@@ -156,6 +156,7 @@ class HmsEncounter(models.Model):
                 "move_type": "out_invoice",
                 "partner_id": partner.id,
                 "invoice_date": fields.Date.context_today(self),
+                "invoice_date_due": fields.Date.context_today(self),
                 "invoice_line_ids": [(0, 0, line) for line in invoice_lines],
             }
         )

@@ -84,7 +84,7 @@ class HmsPrescriptionLine(models.Model):
     product_id = fields.Many2one(
         "product.product",
         required=True,
-        domain="[('type', 'in', ['consu', 'product']), ('sale_ok', '=', True)]",
+        domain="[('type', '=', 'consu')]",
     )
     quantity = fields.Float(default=1.0, required=True)
     dose = fields.Char(help="e.g. 500 mg")
