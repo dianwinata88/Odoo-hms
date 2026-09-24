@@ -11,7 +11,8 @@
                     <button name="action_checkin" type="object" string="Check in"
                             invisible="state != 'confirmed'" class="btn-primary"/>
                     <button name="action_create_encounter" type="object" string="Start encounter"
-                            invisible="state != 'checkin'" class="btn-primary"/>
+                            invisible="state != 'checkin'" class="btn-primary"
+                            groups="hms.group_hms_practitioner"/>
                     <button name="action_done" type="object" string="Mark done"
                             invisible="state not in ('confirmed', 'checkin')"/>
                     <button name="action_cancel" type="object" string="Cancel"

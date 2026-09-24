@@ -87,6 +87,9 @@ class HmsEncounter(models.Model):
 
     def action_done(self):
         self.write({"state": "done"})
+        self.filtered(lambda e: e.appointment_id.state == "checkin").appointment_id.write(
+            {"state": "done"}
+        )
 
     def action_cancel(self):
         self.write({"state": "cancel"})
