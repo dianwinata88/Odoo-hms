@@ -8,6 +8,14 @@ class HmsPatient(models.Model):
     _order = "name"
 
     name = fields.Char(required=True, tracking=True)
+    title = fields.Selection(
+        [("mr", "Mr."), ("mrs", "Mrs."), ("ms", "Ms.")],
+    )
+    identification_number = fields.Char(
+        string="National ID",
+        index=True,
+        copy=False,
+    )
     mrn = fields.Char(
         string="Medical record no.",
         readonly=True,
@@ -83,7 +91,7 @@ class HmsPatient(models.Model):
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
-            if vals.get("mrn", "New") == "New":
+            if not vals.get("mrn") or vals["mrn"] == "New":
                 vals["mrn"] = self.env["ir.sequence"].next_by_code("hms.patient") or "New"
         return super().create(vals_list)
 
