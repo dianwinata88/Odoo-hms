@@ -81,7 +81,8 @@ class TestEncounter(TransactionCase):
 
     def test_bmi_computation(self):
         enc = self._make_encounter(weight=70.0, height=175.0)
-        self.assertAlmostEqual(enc.bmi, 70.0 / (1.75**2), places=2)
+        # digits=(12, 1) rounds the read value: 70 / 1.75^2 = 22.857 -> 22.9
+        self.assertAlmostEqual(enc.bmi, 22.9)
 
     def test_bmi_without_vitals_is_zero(self):
         enc = self._make_encounter()
