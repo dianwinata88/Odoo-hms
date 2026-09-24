@@ -35,6 +35,9 @@ dispensing, and invoicing via account.
         "wizard/hms_dispense_wizard_views.xml",
         "report/hms_reports.xml",
     ],
+    "demo": [
+        "data/hms_pharmacy_demo.xml",
+    ],
     "application": True,
     "installable": True,
 }

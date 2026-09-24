@@ -44,6 +44,12 @@
                                     <td><strong>Encounter</strong></td>
                                     <td><t t-out="doc.encounter_id.name or ''"/></td>
                                 </tr>
+                                <tr>
+                                    <td><strong>Department</strong></td>
+                                    <td><t t-out="doc.practitioner_id.department_id.name or ''"/></td>
+                                    <td><strong>License No</strong></td>
+                                    <td><t t-out="doc.practitioner_id.license_number or ''"/></td>
+                                </tr>
                             </tbody>
                         </table>
 
@@ -56,6 +62,7 @@
                                     <th>Duration</th>
                                     <th class="text-end">Qty</th>
                                     <th>Instructions</th>
+                                    <th class="text-end">Total</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -66,11 +73,38 @@
                                     <td><t t-out="line.duration_days or ''"/> days</td>
                                     <td class="text-end"><t t-out="line.quantity"/></td>
                                     <td><t t-out="line.instructions or ''"/></td>
+                                    <td class="text-end"><t t-out="line.quantity * line.product_id.list_price"
+                                        t-options="{'widget': 'monetary', 'display_currency': doc.practitioner_id.currency_id}"/></td>
                                 </tr>
                             </tbody>
+                            <t t-set="grand_total" t-value="sum(l.quantity * l.product_id.list_price for l in doc.line_ids)"/>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="6" class="text-end"><strong>Total</strong></td>
+                                    <td class="text-end"><strong><t t-out="grand_total"
+                                        t-options="{'widget': 'monetary', 'display_currency': doc.practitioner_id.currency_id}"/></strong></td>
+                                </tr>
+                            </tfoot>
                         </table>
 
                         <p t-if="doc.notes"><strong>Notes:</strong> <t t-out="doc.notes"/></p>
+
+                        <div class="row" style="margin-top: 60px;">
+                            <div class="col-6">
+                                <p>_______________________________<br/>
+                                <strong><t t-out="doc.practitioner_id.name"/></strong><br/>
+                                <span t-if="doc.practitioner_id.department_id">
+                                    <t t-out="doc.practitioner_id.department_id.name"/>
+                                </span>
+                                <span t-if="doc.practitioner_id.license_number">
+                                    <br/>License No: <t t-out="doc.practitioner_id.license_number"/>
+                                </span></p>
+                            </div>
+                            <div class="col-6 text-end">
+                                <p>_______________________________<br/>
+                                <strong>Dispensed by</strong></p>
+                            </div>
+                        </div>
                     </div>
                 </t>
             </t>
