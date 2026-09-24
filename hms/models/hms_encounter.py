@@ -36,7 +36,9 @@ class HmsEncounter(models.Model):
     spo2 = fields.Integer(string="SpO2 (%)")
     weight = fields.Float(string="Weight (kg)")
     height = fields.Float(string="Height (cm)")
+    bmi = fields.Float(string="BMI", compute="_compute_bmi", digits=(12, 1))
     diagnosis_ids = fields.Many2many("hms.diagnosis", string="Diagnoses")
+    followup_date = fields.Date(string="Follow-up date")
     notes = fields.Text(string="Clinical notes")
     treatment_plan = fields.Text()
 
@@ -54,6 +56,12 @@ class HmsEncounter(models.Model):
     @api.model
     def _expand_states(self, states, domain, order):
         return [key for key, _label in self._fields["state"].selection]
+
+    @api.depends("weight", "height")
+    def _compute_bmi(self):
+        for enc in self:
+            height_m = enc.height / 100.0
+            enc.bmi = enc.weight / (height_m ** 2) if enc.weight and height_m else 0.0
 
     @api.depends("prescription_ids")
     def _compute_prescription_count(self):
@@ -82,6 +90,28 @@ class HmsEncounter(models.Model):
 
     def action_cancel(self):
         self.write({"state": "cancel"})
+
+    def action_schedule_followup(self):
+        self.ensure_one()
+        if not self.followup_date:
+            raise UserError(_("Set a follow-up date before scheduling an appointment."))
+        appointment = self.env["hms.appointment"].create(
+            {
+                "patient_id": self.patient_id.id,
+                "practitioner_id": self.practitioner_id.id,
+                "department_id": self.department_id.id,
+                "date_start": fields.Datetime.to_datetime(self.followup_date),
+                "reason": _("Follow-up for encounter %(name)s", name=self.name),
+            }
+        )
+        return {
+            "type": "ir.actions.act_window",
+            "name": "Follow-up Appointment",
+            "res_model": "hms.appointment",
+            "res_id": appointment.id,
+            "view_mode": "form",
+            "target": "current",
+        }
 
     def action_new_prescription(self):
         self.ensure_one()
