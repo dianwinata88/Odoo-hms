@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_hms_appointment_form" model="ir.ui.view">
+        <field name="name">hms.appointment.form</field>
+        <field name="model">hms.appointment</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_confirm" type="object" string="Confirm"
+                            invisible="state != 'draft'" class="btn-primary"/>
+                    <button name="action_checkin" type="object" string="Check in"
+                            invisible="state != 'confirmed'" class="btn-primary"/>
+                    <button name="action_create_encounter" type="object" string="Start encounter"
+                            invisible="state != 'checkin'" class="btn-primary"/>
+                    <button name="action_done" type="object" string="Mark done"
+                            invisible="state not in ('confirmed', 'checkin')"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            invisible="state in ('done', 'cancel')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,confirmed,checkin,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Patient">
+                            <field name="patient_id"/>
+                            <field name="reason"/>
+                        </group>
+                        <group string="Schedule">
+                            <field name="department_id"/>
+                            <field name="practitioner_id"/>
+                            <field name="date_start"/>
+                            <field name="duration_minutes"/>
+                            <field name="date_end"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Notes">
+                            <field name="notes"/>
+                        </page>
+                        <page string="Encounter" invisible="not encounter_id">
+                            <field name="encounter_id"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hms_appointment_list" model="ir.ui.view">
+        <field name="name">hms.appointment.list</field>
+        <field name="model">hms.appointment</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="practitioner_id"/>
+                <field name="department_id"/>
+                <field name="date_start"/>
+                <field name="duration_minutes"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'"
+                       decoration-info="state == 'confirmed'"
+                       decoration-warning="state == 'checkin'"
+                       decoration-danger="state == 'cancel'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_hms_appointment_calendar" model="ir.ui.view">
+        <field name="name">hms.appointment.calendar</field>
+        <field name="model">hms.appointment</field>
+        <field name="arch" type="xml">
+            <calendar date_start="date_start" date_stop="date_end"
+                      color="practitioner_id" mode="week">
+                <field name="patient_id"/>
+                <field name="practitioner_id"/>
+                <field name="state"/>
+            </calendar>
+        </field>
+    </record>
+
+    <record id="view_hms_appointment_kanban" model="ir.ui.view">
+        <field name="name">hms.appointment.kanban</field>
+        <field name="model">hms.appointment</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="practitioner_id"/>
+                <field name="date_start"/>
+                <field name="state"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_content">
+                            <strong><field name="patient_id"/></strong>
+                            <div class="text-muted">
+                                <field name="date_start"/> · <field name="practitioner_id"/>
+                            </div>
+                            <div class="text-muted"><field name="name"/></div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_hms_appointment_search" model="ir.ui.view">
+        <field name="name">hms.appointment.search</field>
+        <field name="model">hms.appointment</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="practitioner_id"/>
+                <filter name="today" string="Today"
+                        domain="[('date_start', '&gt;=', datetime.datetime.now().strftime('%Y-%m-%d')),
+                                 ('date_start', '&lt;', (datetime.datetime.now() + datetime.timedelta(days=1)).strftime('%Y-%m-%d'))]"/>
+                <filter name="upcoming" string="Upcoming"
+                        domain="[('date_start', '&gt;=', datetime.datetime.now()), ('state', 'in', ('draft', 'confirmed'))]"/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="confirmed" string="Confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <group>
+                    <filter name="group_state" string="State" context="{'group_by': 'state'}"/>
+                    <filter name="group_practitioner" string="Practitioner"
+                            context="{'group_by': 'practitioner_id'}"/>
+                    <filter name="group_department" string="Department"
+                            context="{'group_by': 'department_id'}"/>
+                    <filter name="group_day" string="Day" context="{'group_by': 'date_start:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_hms_appointment" model="ir.actions.act_window">
+        <field name="name">Appointments</field>
+        <field name="res_model">hms.appointment</field>
+        <field name="view_mode">calendar,kanban,list,form</field>
+        <field name="search_view_id" ref="view_hms_appointment_search"/>
+    </record>
+
+    <menuitem id="menu_hms_appointment" name="Appointments" parent="menu_hms_frontdesk"
+              action="action_hms_appointment" sequence="20"/>
+</odoo>

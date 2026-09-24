@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Root app menu -->
+    <menuitem id="menu_hms_root" name="Hospital" sequence="10" web_icon="hms,static/description/icon.png"/>
+
+    <menuitem id="menu_hms_frontdesk" name="Front Desk" parent="menu_hms_root" sequence="10"/>
+    <menuitem id="menu_hms_clinical" name="Clinical" parent="menu_hms_root" sequence="20"/>
+    <menuitem id="menu_hms_pharmacy" name="Pharmacy" parent="menu_hms_root" sequence="30"
+              groups="hms.group_hms_pharmacist,hms.group_hms_manager"/>
+    <menuitem id="menu_hms_billing" name="Billing" parent="menu_hms_root" sequence="40"
+              groups="hms.group_hms_billing,hms.group_hms_manager"/>
+    <menuitem id="menu_hms_config" name="Configuration" parent="menu_hms_root" sequence="90"
+              groups="hms.group_hms_manager"/>
+</odoo>

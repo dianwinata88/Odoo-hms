@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_hms_encounter_form" model="ir.ui.view">
+        <field name="name">hms.encounter.form</field>
+        <field name="model">hms.encounter</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_start" type="object" string="Start consultation"
+                            invisible="state != 'draft'" class="btn-primary"/>
+                    <button name="action_new_prescription" type="object" string="New prescription"
+                            invisible="state in ('done', 'cancel')"/>
+                    <button name="action_create_invoice" type="object" string="Create invoice"
+                            invisible="state != 'done' or invoice_id"/>
+                    <button name="action_done" type="object" string="Done"
+                            invisible="state != 'in_progress'"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            invisible="state in ('done', 'cancel')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,in_progress,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_invoice" type="object" class="oe_stat_button"
+                                icon="fa-dollar" invisible="not invoice_id">
+                            <field name="invoice_count" widget="statinfo" string="Invoices"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Visit">
+                            <field name="patient_id"/>
+                            <field name="practitioner_id"/>
+                            <field name="department_id"/>
+                            <field name="date"/>
+                        </group>
+                        <group string="Context">
+                            <field name="appointment_id"/>
+                            <field name="invoice_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Consultation">
+                            <field name="chief_complaint" placeholder="Reason for visit"/>
+                            <separator string="Vitals"/>
+                            <group>
+                                <group>
+                                    <field name="temperature"/>
+                                    <field name="heart_rate"/>
+                                    <field name="bp_systolic"/>
+                                    <field name="bp_diastolic"/>
+                                </group>
+                                <group>
+                                    <field name="respiratory_rate"/>
+                                    <field name="spo2"/>
+                                    <field name="weight"/>
+                                    <field name="height"/>
+                                </group>
+                            </group>
+                            <separator string="Assessment"/>
+                            <field name="diagnosis_ids" widget="many2many_tags"/>
+                            <field name="notes" placeholder="Clinical notes"/>
+                            <field name="treatment_plan" placeholder="Treatment plan"/>
+                        </page>
+                        <page string="Prescriptions">
+                            <field name="prescription_ids" context="{'default_patient_id': patient_id, 'default_encounter_id': id, 'default_practitioner_id': practitioner_id}">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="state"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hms_encounter_list" model="ir.ui.view">
+        <field name="name">hms.encounter.list</field>
+        <field name="model">hms.encounter</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="practitioner_id"/>
+                <field name="department_id"/>
+                <field name="date"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'"
+                       decoration-warning="state == 'in_progress'"
+                       decoration-danger="state == 'cancel'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_hms_encounter_search" model="ir.ui.view">
+        <field name="name">hms.encounter.search</field>
+        <field name="model">hms.encounter</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="practitioner_id"/>
+                <filter name="in_progress" string="In progress" domain="[('state', '=', 'in_progress')]"/>
+                <filter name="unbilled" string="Unbilled"
+                        domain="[('state', '=', 'done'), ('invoice_id', '=', False)]"/>
+                <group>
+                    <filter name="group_state" string="State" context="{'group_by': 'state'}"/>
+                    <filter name="group_practitioner" string="Practitioner"
+                            context="{'group_by': 'practitioner_id'}"/>
+                    <filter name="group_day" string="Day" context="{'group_by': 'date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_hms_encounter" model="ir.actions.act_window">
+        <field name="name">Encounters</field>
+        <field name="res_model">hms.encounter</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_hms_encounter_search"/>
+    </record>
+
+    <menuitem id="menu_hms_encounter" name="Encounters" parent="menu_hms_clinical"
+              action="action_hms_encounter" sequence="10"/>
+</odoo>

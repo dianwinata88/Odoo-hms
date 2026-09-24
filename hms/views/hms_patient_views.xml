@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_hms_patient_form" model="ir.ui.view">
+        <field name="name">hms.patient.form</field>
+        <field name="model">hms.patient</field>
+        <field name="arch" type="xml">
+            <form>
+                <header/>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_appointments" type="object" class="oe_stat_button" icon="fa-calendar">
+                            <field name="appointment_count" widget="statinfo" string="Appointments"/>
+                        </button>
+                        <button name="action_view_encounters" type="object" class="oe_stat_button" icon="fa-stethoscope">
+                            <field name="encounter_count" widget="statinfo" string="Encounters"/>
+                        </button>
+                        <button name="action_view_prescriptions" type="object" class="oe_stat_button" icon="fa-file-text-o">
+                            <field name="prescription_count" widget="statinfo" string="Prescriptions"/>
+                        </button>
+                    </div>
+                    <field name="image_1920" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Patient name"/></h1>
+                        <field name="mrn" readonly="1" class="text-muted"/>
+                    </div>
+                    <group>
+                        <group string="Identity">
+                            <field name="gender"/>
+                            <field name="birth_date"/>
+                            <field name="age"/>
+                            <field name="blood_type"/>
+                        </group>
+                        <group string="Contact">
+                            <field name="partner_id"/>
+                            <field name="phone"/>
+                            <field name="email"/>
+                            <field name="street"/>
+                            <field name="city"/>
+                        </group>
+                        <group string="Emergency">
+                            <field name="emergency_contact_name"/>
+                            <field name="emergency_contact_phone"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Medical">
+                            <group>
+                                <field name="allergies" placeholder="Known allergies"/>
+                                <field name="chronic_conditions"/>
+                            </group>
+                            <field name="notes"/>
+                        </page>
+                        <page string="Appointments">
+                            <field name="appointment_ids" context="{'default_patient_id': id}">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="date_start"/>
+                                    <field name="practitioner_id"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'done'"
+                                           decoration-info="state == 'confirmed'"
+                                           decoration-warning="state == 'checkin'"
+                                           decoration-danger="state == 'cancel'"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Encounters">
+                            <field name="encounter_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="practitioner_id"/>
+                                    <field name="state"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Prescriptions">
+                            <field name="prescription_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="date"/>
+                                    <field name="state"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hms_patient_list" model="ir.ui.view">
+        <field name="name">hms.patient.list</field>
+        <field name="model">hms.patient</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="mrn"/>
+                <field name="name"/>
+                <field name="gender"/>
+                <field name="age"/>
+                <field name="blood_type"/>
+                <field name="phone"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_hms_patient_kanban" model="ir.ui.view">
+        <field name="name">hms.patient.kanban</field>
+        <field name="model">hms.patient</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="id"/>
+                <field name="name"/>
+                <field name="mrn"/>
+                <field name="gender"/>
+                <field name="age"/>
+                <field name="blood_type"/>
+                <field name="allergies"/>
+                <templates>
+                    <t t-name="card">
+                        <div class="oe_kanban_content">
+                            <strong><field name="name"/></strong>
+                            <div class="text-muted"><field name="mrn"/></div>
+                            <div>
+                                <t t-if="record.gender.value"><field name="gender"/> · </t>
+                                <field name="age"/> y.o.
+                                <t t-if="record.blood_type.value"> · <field name="blood_type"/></t>
+                            </div>
+                            <div t-if="record.allergies.value" class="text-danger">
+                                Allergies: <field name="allergies"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_hms_patient_search" model="ir.ui.view">
+        <field name="name">hms.patient.search</field>
+        <field name="model">hms.patient</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="mrn"/>
+                <field name="phone"/>
+                <filter name="male" string="Male" domain="[('gender', '=', 'male')]"/>
+                <filter name="female" string="Female" domain="[('gender', '=', 'female')]"/>
+                <filter name="allergies" string="With allergies"
+                        domain="[('allergies', '!=', False)]"/>
+                <group>
+                    <filter name="group_gender" string="Gender" context="{'group_by': 'gender'}"/>
+                    <filter name="group_blood" string="Blood type" context="{'group_by': 'blood_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_hms_patient" model="ir.actions.act_window">
+        <field name="name">Patients</field>
+        <field name="res_model">hms.patient</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_hms_patient_search"/>
+    </record>
+
+    <menuitem id="menu_hms_patient" name="Patients" parent="menu_hms_frontdesk"
+              action="action_hms_patient" sequence="10"/>
+</odoo>

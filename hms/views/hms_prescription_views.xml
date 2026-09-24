@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_hms_prescription_form" model="ir.ui.view">
+        <field name="name">hms.prescription.form</field>
+        <field name="model">hms.prescription</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_confirm" type="object" string="Confirm"
+                            invisible="state != 'draft'" class="btn-primary"/>
+                    <button name="action_dispense" type="object" string="Dispense"
+                            invisible="state != 'confirmed'" class="btn-primary"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            invisible="state in ('dispensed', 'cancel')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,confirmed,dispensed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="patient_id"/>
+                            <field name="practitioner_id"/>
+                        </group>
+                        <group>
+                            <field name="encounter_id"/>
+                            <field name="date"/>
+                            <field name="picking_id" invisible="not picking_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Medications">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="dose"/>
+                                    <field name="frequency"/>
+                                    <field name="duration_days"/>
+                                    <field name="quantity"/>
+                                    <field name="uom_id"/>
+                                    <field name="instructions"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hms_prescription_list" model="ir.ui.view">
+        <field name="name">hms.prescription.list</field>
+        <field name="model">hms.prescription</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="practitioner_id"/>
+                <field name="date"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'dispensed'"
+                       decoration-info="state == 'confirmed'"
+                       decoration-danger="state == 'cancel'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_hms_prescription_search" model="ir.ui.view">
+        <field name="name">hms.prescription.search</field>
+        <field name="model">hms.prescription</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="patient_id"/>
+                <field name="practitioner_id"/>
+                <filter name="to_dispense" string="To dispense" domain="[('state', '=', 'confirmed')]"/>
+                <group>
+                    <filter name="group_state" string="State" context="{'group_by': 'state'}"/>
+                    <filter name="group_practitioner" string="Practitioner"
+                            context="{'group_by': 'practitioner_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_hms_prescription" model="ir.actions.act_window">
+        <field name="name">Prescriptions</field>
+        <field name="res_model">hms.prescription</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_hms_prescription_search"/>
+    </record>
+
+    <menuitem id="menu_hms_prescription" name="Prescriptions" parent="menu_hms_clinical"
+              action="action_hms_prescription" sequence="20"/>
+    <menuitem id="menu_hms_pharmacy_queue" name="Dispense queue" parent="menu_hms_pharmacy"
+              action="action_hms_prescription" sequence="10"/>
+</odoo>

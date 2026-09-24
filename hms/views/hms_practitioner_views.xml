@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_hms_practitioner_form" model="ir.ui.view">
+        <field name="name">hms.practitioner.form</field>
+        <field name="model">hms.practitioner</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <field name="image_1920" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Dr. Jane Doe"/></h1>
+                    </div>
+                    <group>
+                        <group string="Assignment">
+                            <field name="department_id"/>
+                            <field name="role"/>
+                            <field name="specialization"/>
+                        </group>
+                        <group string="Professional">
+                            <field name="employee_id"/>
+                            <field name="license_number"/>
+                            <field name="consultation_fee"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hms_practitioner_list" model="ir.ui.view">
+        <field name="name">hms.practitioner.list</field>
+        <field name="model">hms.practitioner</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="department_id"/>
+                <field name="role"/>
+                <field name="specialization"/>
+                <field name="consultation_fee"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_hms_practitioner_search" model="ir.ui.view">
+        <field name="name">hms.practitioner.search</field>
+        <field name="model">hms.practitioner</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="department_id"/>
+                <filter name="doctors" string="Doctors" domain="[('role', '=', 'doctor')]"/>
+                <filter name="nurses" string="Nurses" domain="[('role', '=', 'nurse')]"/>
+                <group>
+                    <filter name="group_department" string="Department"
+                            context="{'group_by': 'department_id'}"/>
+                    <filter name="group_role" string="Role" context="{'group_by': 'role'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_hms_practitioner" model="ir.actions.act_window">
+        <field name="name">Practitioners</field>
+        <field name="res_model">hms.practitioner</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_hms_practitioner_search"/>
+    </record>
+
+    <menuitem id="menu_hms_practitioner" name="Practitioners" parent="menu_hms_config"
+              action="action_hms_practitioner" sequence="20"/>
+</odoo>

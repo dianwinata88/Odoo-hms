@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="report_paperformat_hms" model="report.paperformat">
+        <field name="name">HMS A4</field>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">25</field>
+        <field name="margin_bottom">20</field>
+        <field name="margin_left">12</field>
+        <field name="margin_right">12</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">20</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_report_prescription" model="ir.actions.report">
+        <field name="name">Prescription</field>
+        <field name="model">hms.prescription</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">hms.report_prescription</field>
+        <field name="report_file">hms.report_prescription</field>
+        <field name="paperformat_id" ref="hms.report_paperformat_hms"/>
+        <field name="binding_model_id" ref="hms.model_hms_prescription"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_prescription">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <h2>Prescription <t t-out="doc.name"/></h2>
+                        <table class="table table-sm o_main_table">
+                            <tbody>
+                                <tr>
+                                    <td><strong>Patient</strong></td>
+                                    <td><t t-out="doc.patient_id.name"/> (<t t-out="doc.patient_id.mrn"/>)</td>
+                                    <td><strong>Date</strong></td>
+                                    <td><t t-out="doc.date" t-options="{'widget': 'datetime'}"/></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Practitioner</strong></td>
+                                    <td><t t-out="doc.practitioner_id.name"/></td>
+                                    <td><strong>Encounter</strong></td>
+                                    <td><t t-out="doc.encounter_id.name or ''"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <table class="table table-sm o_main_table">
+                            <thead>
+                                <tr>
+                                    <th>Medication</th>
+                                    <th>Dose</th>
+                                    <th>Frequency</th>
+                                    <th>Duration</th>
+                                    <th class="text-end">Qty</th>
+                                    <th>Instructions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="doc.line_ids" t-as="line">
+                                    <td><t t-out="line.product_id.display_name"/></td>
+                                    <td><t t-out="line.dose or ''"/></td>
+                                    <td><t t-out="line.frequency or ''"/></td>
+                                    <td><t t-out="line.duration_days or ''"/> days</td>
+                                    <td class="text-end"><t t-out="line.quantity"/></td>
+                                    <td><t t-out="line.instructions or ''"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <p t-if="doc.notes"><strong>Notes:</strong> <t t-out="doc.notes"/></p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
