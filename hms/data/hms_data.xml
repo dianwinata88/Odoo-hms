@@ -13,9 +13,7 @@
         <record id="product_consultation" model="product.template">
             <field name="name">Medical Consultation</field>
             <field name="type">service</field>
-            <field name="sale_ok" eval="True"/>
             <field name="list_price">0.0</field>
-            <field name="invoice_policy">order</field>
         </record>
 
     </data>
