@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Common pharmacy drugs for demo prescriptions -->
+        <record id="product_paracetamol_500" model="product.product">
+            <field name="name">Paracetamol 500mg</field>
+            <field name="type">consu</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="list_price">2.50</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        </record>
+
+        <record id="product_amoxicillin_250" model="product.product">
+            <field name="name">Amoxicillin 250mg</field>
+            <field name="type">consu</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="list_price">8.75</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        </record>
+
+        <record id="product_ibuprofen_400" model="product.product">
+            <field name="name">Ibuprofen 400mg</field>
+            <field name="type">consu</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="list_price">3.20</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        </record>
+
+        <record id="product_cetirizine_10" model="product.product">
+            <field name="name">Cetirizine 10mg</field>
+            <field name="type">consu</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="list_price">4.10</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        </record>
+
+        <record id="product_omeprazole_20" model="product.product">
+            <field name="name">Omeprazole 20mg</field>
+            <field name="type">consu</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="list_price">6.40</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        </record>
+
+        <record id="product_metformin_500" model="product.product">
+            <field name="name">Metformin 500mg</field>
+            <field name="type">consu</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="list_price">5.60</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        </record>
+
+        <record id="product_salbutamol_inhaler" model="product.product">
+            <field name="name">Salbutamol Inhaler 100mcg</field>
+            <field name="type">consu</field>
+            <field name="sale_ok" eval="True"/>
+            <field name="list_price">12.90</field>
+            <field name="uom_id" ref="uom.product_uom_unit"/>
+            <field name="uom_po_id" ref="uom.product_uom_unit"/>
+        </record>
+
+    </data>
+</odoo>

@@ -40,6 +40,7 @@ dispensing, and invoicing via account.
     "demo": [
         "data/hms_demo.xml",
         "data/hms_appointment_demo.xml",
+        "data/hms_pharmacy_demo.xml",
     ],
     "application": True,
     "installable": True,
