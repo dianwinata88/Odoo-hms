@@ -38,6 +38,7 @@
                 <field name="department_id"/>
                 <field name="role"/>
                 <field name="specialization"/>
+                <field name="currency_id" column_invisible="1"/>
                 <field name="consultation_fee"/>
             </list>
         </field>

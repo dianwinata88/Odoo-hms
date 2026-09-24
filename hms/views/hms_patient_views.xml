@@ -20,11 +20,17 @@
                     </div>
                     <field name="image_1920" widget="image" class="oe_avatar"/>
                     <div class="oe_title">
-                        <h1><field name="name" placeholder="Patient name"/></h1>
+                        <div class="d-flex align-items-center">
+                            <field name="title" class="me-2" placeholder="Title"/>
+                            <h1 class="flex-grow-1 mb-0">
+                                <field name="name" placeholder="Patient name"/>
+                            </h1>
+                        </div>
                         <field name="mrn" readonly="1" class="text-muted"/>
                     </div>
                     <group>
                         <group string="Identity">
+                            <field name="identification_number"/>
                             <field name="gender"/>
                             <field name="birth_date"/>
                             <field name="age"/>
@@ -97,6 +103,7 @@
             <list>
                 <field name="mrn"/>
                 <field name="name"/>
+                <field name="identification_number" optional="hide"/>
                 <field name="gender"/>
                 <field name="age"/>
                 <field name="blood_type"/>
@@ -112,23 +119,33 @@
             <kanban>
                 <field name="id"/>
                 <field name="name"/>
+                <field name="title"/>
                 <field name="mrn"/>
                 <field name="gender"/>
                 <field name="age"/>
                 <field name="blood_type"/>
                 <field name="allergies"/>
+                <field name="image_1920"/>
                 <templates>
                     <t t-name="card">
-                        <div class="oe_kanban_content">
-                            <strong><field name="name"/></strong>
-                            <div class="text-muted"><field name="mrn"/></div>
-                            <div>
-                                <t t-if="record.gender.value"><field name="gender"/> · </t>
-                                <field name="age"/> y.o.
-                                <t t-if="record.blood_type.value"> · <field name="blood_type"/></t>
-                            </div>
-                            <div t-if="record.allergies.value" class="text-danger">
-                                Allergies: <field name="allergies"/>
+                        <div class="oe_kanban_content d-flex">
+                            <field name="image_1920" widget="image"
+                                   class="oe_kanban_avatar me-2"
+                                   options="{'preview_image': 'image_1920'}"/>
+                            <div class="flex-grow-1 overflow-hidden">
+                                <strong>
+                                    <t t-if="record.title.value"><field name="title"/> </t>
+                                    <field name="name"/>
+                                </strong>
+                                <div class="text-muted"><field name="mrn"/></div>
+                                <div>
+                                    <t t-if="record.gender.value"><field name="gender"/> · </t>
+                                    <field name="age"/> y.o.
+                                    <t t-if="record.blood_type.value"> · <field name="blood_type"/></t>
+                                </div>
+                                <div t-if="record.allergies.value" class="text-danger">
+                                    Allergies: <field name="allergies"/>
+                                </div>
                             </div>
                         </div>
                     </t>
@@ -144,6 +161,7 @@
             <search>
                 <field name="name"/>
                 <field name="mrn"/>
+                <field name="identification_number"/>
                 <field name="phone"/>
                 <filter name="male" string="Male" domain="[('gender', '=', 'male')]"/>
                 <filter name="female" string="Female" domain="[('gender', '=', 'female')]"/>
