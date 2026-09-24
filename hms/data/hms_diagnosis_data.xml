@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Common outpatient ICD-10 diagnosis catalog -->
+        <record id="diagnosis_j069" model="hms.diagnosis">
+            <field name="code">J06.9</field>
+            <field name="name">Acute upper respiratory infection, unspecified</field>
+        </record>
+        <record id="diagnosis_j00" model="hms.diagnosis">
+            <field name="code">J00</field>
+            <field name="name">Acute nasopharyngitis (common cold)</field>
+        </record>
+        <record id="diagnosis_j029" model="hms.diagnosis">
+            <field name="code">J02.9</field>
+            <field name="name">Acute pharyngitis, unspecified</field>
+        </record>
+        <record id="diagnosis_j189" model="hms.diagnosis">
+            <field name="code">J18.9</field>
+            <field name="name">Pneumonia, unspecified organism</field>
+        </record>
+        <record id="diagnosis_j459" model="hms.diagnosis">
+            <field name="code">J45.9</field>
+            <field name="name">Asthma, unspecified</field>
+        </record>
+        <record id="diagnosis_e119" model="hms.diagnosis">
+            <field name="code">E11.9</field>
+            <field name="name">Type 2 diabetes mellitus without complications</field>
+        </record>
+        <record id="diagnosis_e039" model="hms.diagnosis">
+            <field name="code">E03.9</field>
+            <field name="name">Hypothyroidism, unspecified</field>
+        </record>
+        <record id="diagnosis_e785" model="hms.diagnosis">
+            <field name="code">E78.5</field>
+            <field name="name">Hyperlipidemia, unspecified</field>
+        </record>
+        <record id="diagnosis_i10" model="hms.diagnosis">
+            <field name="code">I10</field>
+            <field name="name">Essential (primary) hypertension</field>
+        </record>
+        <record id="diagnosis_k297" model="hms.diagnosis">
+            <field name="code">K29.7</field>
+            <field name="name">Gastritis, unspecified</field>
+        </record>
+        <record id="diagnosis_k219" model="hms.diagnosis">
+            <field name="code">K21.9</field>
+            <field name="name">Gastro-esophageal reflux disease without esophagitis</field>
+        </record>
+        <record id="diagnosis_a09" model="hms.diagnosis">
+            <field name="code">A09</field>
+            <field name="name">Infectious gastroenteritis and colitis, unspecified</field>
+        </record>
+        <record id="diagnosis_m545" model="hms.diagnosis">
+            <field name="code">M54.5</field>
+            <field name="name">Low back pain</field>
+        </record>
+        <record id="diagnosis_m179" model="hms.diagnosis">
+            <field name="code">M17.9</field>
+            <field name="name">Osteoarthritis of knee, unspecified</field>
+        </record>
+        <record id="diagnosis_n390" model="hms.diagnosis">
+            <field name="code">N39.0</field>
+            <field name="name">Urinary tract infection, site not specified</field>
+        </record>
+        <record id="diagnosis_l309" model="hms.diagnosis">
+            <field name="code">L30.9</field>
+            <field name="name">Dermatitis, unspecified</field>
+        </record>
+        <record id="diagnosis_r51" model="hms.diagnosis">
+            <field name="code">R51</field>
+            <field name="name">Headache</field>
+        </record>
+        <record id="diagnosis_r509" model="hms.diagnosis">
+            <field name="code">R50.9</field>
+            <field name="name">Fever, unspecified</field>
+        </record>
+
+    </data>
+</odoo>

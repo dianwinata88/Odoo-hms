@@ -9,6 +9,17 @@
               groups="hms.group_hms_pharmacist,hms.group_hms_manager"/>
     <menuitem id="menu_hms_billing" name="Billing" parent="menu_hms_root" sequence="40"
               groups="hms.group_hms_billing,hms.group_hms_manager"/>
+
+    <record id="action_hms_patient_invoices" model="ir.actions.act_window">
+        <field name="name">Patient invoices</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('move_type', '=', 'out_invoice')]</field>
+        <field name="context">{'default_move_type': 'out_invoice'}</field>
+    </record>
+
+    <menuitem id="menu_hms_patient_invoices" name="Invoices" parent="menu_hms_billing"
+              action="action_hms_patient_invoices" sequence="10"/>
     <menuitem id="menu_hms_config" name="Configuration" parent="menu_hms_root" sequence="90"
               groups="hms.group_hms_manager"/>
 </odoo>

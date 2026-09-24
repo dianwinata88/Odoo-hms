@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Self-contained demo records for the appointments stream -->
+        <record id="demo_appt_department" model="hms.department">
+            <field name="name">General Medicine</field>
+            <field name="code">GEN</field>
+        </record>
+
+        <record id="demo_appt_practitioner_1" model="hms.practitioner">
+            <field name="name">Dr. Sarah Chen</field>
+            <field name="department_id" ref="demo_appt_department"/>
+            <field name="role">doctor</field>
+            <field name="specialization">Internal Medicine</field>
+            <field name="consultation_fee">75.0</field>
+        </record>
+        <record id="demo_appt_practitioner_2" model="hms.practitioner">
+            <field name="name">Dr. Marcus Webb</field>
+            <field name="department_id" ref="demo_appt_department"/>
+            <field name="role">doctor</field>
+            <field name="specialization">Family Medicine</field>
+            <field name="consultation_fee">60.0</field>
+        </record>
+
+        <record id="demo_appt_patient_1" model="hms.patient">
+            <field name="name">Emma Johnson</field>
+            <field name="gender">female</field>
+            <field name="birth_date">1988-03-12</field>
+        </record>
+        <record id="demo_appt_patient_2" model="hms.patient">
+            <field name="name">Liam Rodriguez</field>
+            <field name="gender">male</field>
+            <field name="birth_date">1975-11-05</field>
+        </record>
+        <record id="demo_appt_patient_3" model="hms.patient">
+            <field name="name">Aisha Patel</field>
+            <field name="gender">female</field>
+            <field name="birth_date">2001-07-28</field>
+        </record>
+
+        <record id="demo_appointment_1" model="hms.appointment">
+            <field name="patient_id" ref="demo_appt_patient_1"/>
+            <field name="practitioner_id" ref="demo_appt_practitioner_1"/>
+            <field name="department_id" ref="demo_appt_department"/>
+            <field name="date_start">2026-10-05 09:00:00</field>
+            <field name="duration_minutes">30</field>
+            <field name="state">confirmed</field>
+            <field name="reason">Annual physical examination</field>
+        </record>
+        <record id="demo_appointment_2" model="hms.appointment">
+            <field name="patient_id" ref="demo_appt_patient_2"/>
+            <field name="practitioner_id" ref="demo_appt_practitioner_1"/>
+            <field name="department_id" ref="demo_appt_department"/>
+            <field name="date_start">2026-10-05 10:00:00</field>
+            <field name="duration_minutes">45</field>
+            <field name="state">draft</field>
+            <field name="reason">Diabetes follow-up and medication review</field>
+        </record>
+        <record id="demo_appointment_3" model="hms.appointment">
+            <field name="patient_id" ref="demo_appt_patient_3"/>
+            <field name="practitioner_id" ref="demo_appt_practitioner_1"/>
+            <field name="department_id" ref="demo_appt_department"/>
+            <field name="date_start">2026-10-05 11:30:00</field>
+            <field name="duration_minutes">30</field>
+            <field name="state">confirmed</field>
+            <field name="reason">Persistent cough and mild fever</field>
+        </record>
+        <record id="demo_appointment_4" model="hms.appointment">
+            <field name="patient_id" ref="demo_appt_patient_1"/>
+            <field name="practitioner_id" ref="demo_appt_practitioner_2"/>
+            <field name="department_id" ref="demo_appt_department"/>
+            <field name="date_start">2026-10-06 09:00:00</field>
+            <field name="duration_minutes">30</field>
+            <field name="state">done</field>
+            <field name="reason">Low back pain evaluation</field>
+        </record>
+        <record id="demo_appointment_5" model="hms.appointment">
+            <field name="patient_id" ref="demo_appt_patient_2"/>
+            <field name="practitioner_id" ref="demo_appt_practitioner_2"/>
+            <field name="department_id" ref="demo_appt_department"/>
+            <field name="date_start">2026-10-06 14:00:00</field>
+            <field name="duration_minutes">30</field>
+            <field name="state">draft</field>
+            <field name="reason">Hypertension check</field>
+        </record>
+
+    </data>
+</odoo>

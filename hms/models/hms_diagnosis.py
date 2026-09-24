@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class HmsDiagnosis(models.Model):
@@ -15,5 +15,7 @@ class HmsDiagnosis(models.Model):
         ("code_unique", "unique(code)", "The diagnosis code must be unique."),
     ]
 
-    def name_get(self):
-        return [(d.id, f"[{d.code}] {d.name}") for d in self]
+    @api.depends("code", "name")
+    def _compute_display_name(self):
+        for diagnosis in self:
+            diagnosis.display_name = f"[{diagnosis.code}] {diagnosis.name}"

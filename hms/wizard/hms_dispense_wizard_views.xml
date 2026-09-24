@@ -10,6 +10,17 @@
                     <field name="location_id"/>
                     <field name="partner_id"/>
                 </group>
+                <separator string="Medications to dispense"/>
+                <field name="line_ids" nolabel="1" readonly="1">
+                    <list>
+                        <field name="product_id"/>
+                        <field name="dose"/>
+                        <field name="frequency"/>
+                        <field name="duration_days"/>
+                        <field name="quantity"/>
+                        <field name="uom_id"/>
+                    </list>
+                </field>
                 <footer>
                     <button name="action_dispense" type="object" string="Dispense"
                             class="btn-primary"/>
