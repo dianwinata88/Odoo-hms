@@ -96,6 +96,36 @@ class TestPrescriptionDispense(TransactionCase):
         with self.assertRaises(UserError):
             self._run_wizard(prescription)
 
+    def test_partial_dispense_creates_backorder(self):
+        scarce = self.env["product.product"].create(
+            {
+                "name": "Test Scarce Drug",
+                "type": "consu",
+                "is_storable": True,
+                "sale_ok": True,
+                "list_price": 7.0,
+            }
+        )
+        self.env["stock.quant"]._update_available_quantity(
+            scarce, self.pharmacy_location, 4.0
+        )
+        prescription = self._make_prescription()
+        self._make_line(prescription, product=scarce, quantity=10.0)
+        prescription.action_confirm()
+        self._run_wizard(prescription)
+        self.assertEqual(prescription.state, "dispensed")
+        picking = prescription.picking_id
+        self.assertEqual(picking.state, "done")
+        move = picking.move_ids
+        self.assertEqual(move.product_id, scarce)
+        self.assertEqual(move.quantity, 4.0)
+        backorder = self.env["stock.picking"].search(
+            [("backorder_id", "=", picking.id)]
+        )
+        self.assertEqual(len(backorder), 1)
+        self.assertEqual(backorder.move_ids.product_id, scarce)
+        self.assertEqual(backorder.move_ids.product_uom_qty, 6.0)
+
     def test_dispense_without_stock_raises(self):
         out_of_stock = self.env["product.product"].create(
             {

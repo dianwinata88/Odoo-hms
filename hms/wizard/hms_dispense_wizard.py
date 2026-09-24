@@ -122,13 +122,8 @@ class HmsDispenseWizard(models.TransientModel):
                 )
             )
         deliverable.picked = True
-        result = picking.button_validate()
-        if (
-            isinstance(result, dict)
-            and result.get("res_model") == "stock.backorder.confirmation"
-        ):
-            self.env["stock.backorder.confirmation"].browse(
-                result["res_id"]
-            ).process()
+        # skip_backorder validates without the interactive confirmation
+        # wizard; Odoo still creates a backorder for the unreserved remainder.
+        picking.with_context(skip_backorder=True).button_validate()
         prescription.write({"state": "dispensed", "picking_id": picking.id})
         return {"type": "ir.actions.act_window_close"}
