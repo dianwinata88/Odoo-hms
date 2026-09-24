@@ -28,6 +28,7 @@ dispensing, and invoicing via account.
         "views/hms_menus.xml",
         "views/hms_department_views.xml",
         "views/hms_practitioner_views.xml",
+        "views/hms_diagnosis_views.xml",
         "views/hms_patient_views.xml",
         "views/hms_appointment_views.xml",
         "views/hms_encounter_views.xml",
