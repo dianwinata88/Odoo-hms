@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Departments -->
+        <record id="demo_department_general" model="hms.department">
+            <field name="name">General Medicine</field>
+            <field name="code">GEN</field>
+            <field name="description">Primary care and general internal medicine.</field>
+        </record>
+        <record id="demo_department_cardiology" model="hms.department">
+            <field name="name">Cardiology</field>
+            <field name="code">CARD</field>
+            <field name="description">Heart and cardiovascular care.</field>
+        </record>
+        <record id="demo_department_pediatrics" model="hms.department">
+            <field name="name">Pediatrics</field>
+            <field name="code">PED</field>
+            <field name="description">Care for infants, children and adolescents.</field>
+        </record>
+
+        <!-- Employees backing the practitioners -->
+        <record id="demo_employee_hart" model="hr.employee">
+            <field name="name">Amelia Hart</field>
+            <field name="job_title">Cardiologist</field>
+        </record>
+        <record id="demo_employee_okafor" model="hr.employee">
+            <field name="name">Chidi Okafor</field>
+            <field name="job_title">General Practitioner</field>
+        </record>
+        <record id="demo_employee_reyes" model="hr.employee">
+            <field name="name">Lucia Reyes</field>
+            <field name="job_title">Pediatric Nurse</field>
+        </record>
+
+        <!-- Practitioners -->
+        <record id="demo_practitioner_hart" model="hms.practitioner">
+            <field name="name">Dr. Amelia Hart</field>
+            <field name="employee_id" ref="demo_employee_hart"/>
+            <field name="department_id" ref="demo_department_cardiology"/>
+            <field name="role">doctor</field>
+            <field name="specialization">Interventional Cardiology</field>
+            <field name="license_number">MD-2014-0091</field>
+            <field name="consultation_fee">150.0</field>
+        </record>
+        <record id="demo_practitioner_okafor" model="hms.practitioner">
+            <field name="name">Dr. Chidi Okafor</field>
+            <field name="employee_id" ref="demo_employee_okafor"/>
+            <field name="department_id" ref="demo_department_general"/>
+            <field name="role">doctor</field>
+            <field name="specialization">Family Medicine</field>
+            <field name="license_number">MD-2017-0342</field>
+            <field name="consultation_fee">80.0</field>
+        </record>
+        <record id="demo_practitioner_reyes" model="hms.practitioner">
+            <field name="name">Lucia Reyes, RN</field>
+            <field name="employee_id" ref="demo_employee_reyes"/>
+            <field name="department_id" ref="demo_department_pediatrics"/>
+            <field name="role">nurse</field>
+            <field name="license_number">RN-2020-1188</field>
+        </record>
+
+        <!-- Patients -->
+        <record id="demo_patient_anderson" model="hms.patient">
+            <field name="title">mr</field>
+            <field name="name">John Anderson</field>
+            <field name="identification_number">ID-8421-3309</field>
+            <field name="gender">male</field>
+            <field name="birth_date">1982-04-17</field>
+            <field name="blood_type">o+</field>
+            <field name="phone">+1 555 010 2233</field>
+            <field name="email">john.anderson@example.com</field>
+            <field name="city">Springfield</field>
+            <field name="allergies">Penicillin</field>
+            <field name="emergency_contact_name">Mary Anderson</field>
+            <field name="emergency_contact_phone">+1 555 010 2234</field>
+        </record>
+        <record id="demo_patient_bennett" model="hms.patient">
+            <field name="title">mrs</field>
+            <field name="name">Sophie Bennett</field>
+            <field name="identification_number">ID-7310-5528</field>
+            <field name="gender">female</field>
+            <field name="birth_date">1990-11-02</field>
+            <field name="blood_type">a-</field>
+            <field name="phone">+1 555 014 7788</field>
+            <field name="email">sophie.bennett@example.com</field>
+            <field name="city">Riverton</field>
+            <field name="chronic_conditions">Hypertension</field>
+        </record>
+        <record id="demo_patient_nguyen" model="hms.patient">
+            <field name="title">ms</field>
+            <field name="name">Linh Nguyen</field>
+            <field name="identification_number">ID-6554-8012</field>
+            <field name="gender">female</field>
+            <field name="birth_date">2016-07-25</field>
+            <field name="blood_type">b+</field>
+            <field name="allergies">Peanuts, dust mites</field>
+            <field name="emergency_contact_name">Mai Nguyen</field>
+            <field name="emergency_contact_phone">+1 555 019 4412</field>
+        </record>
+        <record id="demo_patient_omar" model="hms.patient">
+            <field name="title">mr</field>
+            <field name="name">Omar Haddad</field>
+            <field name="identification_number">ID-9902-1147</field>
+            <field name="gender">male</field>
+            <field name="birth_date">1975-01-30</field>
+            <field name="blood_type">ab+</field>
+            <field name="phone">+1 555 017 9901</field>
+            <field name="email">omar.haddad@example.com</field>
+            <field name="city">Springfield</field>
+            <field name="chronic_conditions">Type 2 diabetes</field>
+            <field name="notes">Prefers morning appointments.</field>
+        </record>
+
+    </data>
+</odoo>
