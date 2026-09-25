@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from odoo.exceptions import UserError, ValidationError
+from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tests import TransactionCase, tagged
 
 
@@ -69,6 +69,50 @@ class TestAppointment(TestHmsBase):
         start = datetime.now() + timedelta(days=3)
         self._make_appointment(start)
         self._make_appointment(start + timedelta(hours=1))
+
+
+class TestPractitionerOwnership(TestHmsBase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.doctor_user = cls.env["res.users"].create(
+            {
+                "name": "Dr. Own",
+                "login": "dr_own_hms",
+                "groups_id": [(6, 0, [cls.env.ref("hms.group_hms_practitioner").id])],
+            }
+        )
+        employee = cls.env["hr.employee"].create(
+            {"name": "Dr. Own", "user_id": cls.doctor_user.id}
+        )
+        cls.own_practitioner = cls.env["hms.practitioner"].create(
+            {
+                "name": "Dr. Own",
+                "employee_id": employee.id,
+                "department_id": cls.department.id,
+                "role": "doctor",
+            }
+        )
+
+    def _vals(self, model, practitioner):
+        vals = {"patient_id": self.patient.id, "practitioner_id": practitioner.id}
+        if model == "hms.appointment":
+            vals["date_start"] = datetime.now() + timedelta(days=10)
+        return vals
+
+    def test_practitioner_can_create_own_records(self):
+        for model in ("hms.appointment", "hms.encounter", "hms.prescription"):
+            rec = self.env[model].with_user(self.doctor_user).create(
+                self._vals(model, self.own_practitioner)
+            )
+            self.assertEqual(rec.user_id, self.doctor_user)
+
+    def test_practitioner_cannot_create_for_other_practitioner(self):
+        for model in ("hms.appointment", "hms.encounter", "hms.prescription"):
+            with self.assertRaises(AccessError):
+                self.env[model].with_user(self.doctor_user).create(
+                    self._vals(model, self.practitioner)
+                )
 
 
 class TestEncounterBilling(TestHmsBase):
