@@ -48,7 +48,20 @@ class HmsPrescription(models.Model):
                 )
         return super().create(vals_list)
 
+    def _check_transition(self, allowed_states, target_state):
+        for prescription in self:
+            if prescription.state not in allowed_states:
+                raise UserError(
+                    _(
+                        "Prescription %(name)s cannot be moved from %(state)s to %(target)s.",
+                        name=prescription.name,
+                        state=dict(self._fields["state"].selection).get(prescription.state),
+                        target=dict(self._fields["state"].selection).get(target_state),
+                    )
+                )
+
     def action_confirm(self):
+        self._check_transition(("draft",), "confirmed")
         for prescription in self:
             if not prescription.line_ids:
                 raise UserError(
@@ -57,12 +70,25 @@ class HmsPrescription(models.Model):
         self.write({"state": "confirmed"})
 
     def action_cancel(self):
+        self._check_transition(("draft", "confirmed"), "cancel")
         self.write({"state": "cancel"})
+
+    def _check_can_dispense(self):
+        for prescription in self:
+            if prescription.state != "confirmed":
+                raise UserError(_("Only confirmed prescriptions can be dispensed."))
+            if prescription.picking_id:
+                raise UserError(
+                    _(
+                        "Prescription %(name)s has already been dispensed (%(picking)s).",
+                        name=prescription.name,
+                        picking=prescription.picking_id.name,
+                    )
+                )
 
     def action_dispense(self):
         self.ensure_one()
-        if self.state != "confirmed":
-            raise UserError(_("Only confirmed prescriptions can be dispensed."))
+        self._check_can_dispense()
         return {
             "type": "ir.actions.act_window",
             "name": "Dispense",
