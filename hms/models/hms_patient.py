@@ -1,5 +1,8 @@
 from odoo import api, fields, models
 
+ENCOUNTER_GROUPS = "hms.group_hms_practitioner,hms.group_hms_pharmacist,hms.group_hms_billing"
+PRESCRIPTION_GROUPS = ENCOUNTER_GROUPS
+
 
 class HmsPatient(models.Model):
     _name = "hms.patient"
@@ -34,6 +37,7 @@ class HmsPatient(models.Model):
             ("ab+", "AB+"), ("ab-", "AB-"),
             ("o+", "O+"), ("o-", "O-"),
         ],
+        groups="hms.group_hms_practitioner",
     )
     phone = fields.Char()
     email = fields.Char()
@@ -41,19 +45,33 @@ class HmsPatient(models.Model):
     city = fields.Char()
     emergency_contact_name = fields.Char(string="Emergency contact")
     emergency_contact_phone = fields.Char(string="Emergency phone")
-    allergies = fields.Text()
-    chronic_conditions = fields.Text(string="Chronic conditions")
-    notes = fields.Text()
+    allergies = fields.Text(groups="hms.group_hms_practitioner")
+    chronic_conditions = fields.Text(string="Chronic conditions", groups="hms.group_hms_practitioner")
+    notes = fields.Text(groups="hms.group_hms_practitioner")
     active = fields.Boolean(default=True)
     image_1920 = fields.Image("Photo", max_width=1920, max_height=1920)
 
     appointment_ids = fields.One2many("hms.appointment", "patient_id", string="Appointments")
-    encounter_ids = fields.One2many("hms.encounter", "patient_id", string="Encounters")
-    prescription_ids = fields.One2many("hms.prescription", "patient_id", string="Prescriptions")
+    encounter_ids = fields.One2many(
+        "hms.encounter",
+        "patient_id",
+        string="Encounters",
+        groups=ENCOUNTER_GROUPS,
+    )
+    prescription_ids = fields.One2many(
+        "hms.prescription",
+        "patient_id",
+        string="Prescriptions",
+        groups=PRESCRIPTION_GROUPS,
+    )
 
-    appointment_count = fields.Integer(compute="_compute_counts")
-    encounter_count = fields.Integer(compute="_compute_counts")
-    prescription_count = fields.Integer(compute="_compute_counts")
+    appointment_count = fields.Integer(compute="_compute_appointment_count")
+    encounter_count = fields.Integer(
+        compute="_compute_encounter_count", groups=ENCOUNTER_GROUPS
+    )
+    prescription_count = fields.Integer(
+        compute="_compute_prescription_count", groups=PRESCRIPTION_GROUPS
+    )
 
     _sql_constraints = [
         ("mrn_unique", "unique(mrn)", "The medical record number must be unique."),
@@ -73,11 +91,19 @@ class HmsPatient(models.Model):
             else:
                 patient.age = 0
 
-    @api.depends("appointment_ids", "encounter_ids", "prescription_ids")
-    def _compute_counts(self):
+    @api.depends("appointment_ids")
+    def _compute_appointment_count(self):
         for patient in self:
             patient.appointment_count = len(patient.appointment_ids)
+
+    @api.depends("encounter_ids")
+    def _compute_encounter_count(self):
+        for patient in self:
             patient.encounter_count = len(patient.encounter_ids)
+
+    @api.depends("prescription_ids")
+    def _compute_prescription_count(self):
+        for patient in self:
             patient.prescription_count = len(patient.prescription_ids)
 
     @api.model_create_multi

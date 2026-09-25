@@ -42,27 +42,27 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="Consultation">
-                            <field name="chief_complaint" placeholder="Reason for visit"/>
+                        <page string="Consultation" groups="hms.group_hms_practitioner">
+                            <field name="chief_complaint" groups="hms.group_hms_practitioner" placeholder="Reason for visit"/>
                             <separator string="Vitals"/>
                             <group>
                                 <group>
-                                    <field name="temperature"/>
-                                    <field name="heart_rate"/>
-                                    <field name="bp_systolic"/>
-                                    <field name="bp_diastolic"/>
+                                    <field name="temperature" groups="hms.group_hms_practitioner"/>
+                                    <field name="heart_rate" groups="hms.group_hms_practitioner"/>
+                                    <field name="bp_systolic" groups="hms.group_hms_practitioner"/>
+                                    <field name="bp_diastolic" groups="hms.group_hms_practitioner"/>
                                 </group>
                                 <group>
-                                    <field name="respiratory_rate"/>
-                                    <field name="spo2"/>
-                                    <field name="weight"/>
-                                    <field name="height"/>
+                                    <field name="respiratory_rate" groups="hms.group_hms_practitioner"/>
+                                    <field name="spo2" groups="hms.group_hms_practitioner"/>
+                                    <field name="weight" groups="hms.group_hms_practitioner"/>
+                                    <field name="height" groups="hms.group_hms_practitioner"/>
                                 </group>
                             </group>
                             <separator string="Assessment"/>
-                            <field name="diagnosis_ids" widget="many2many_tags"/>
-                            <field name="notes" placeholder="Clinical notes"/>
-                            <field name="treatment_plan" placeholder="Treatment plan"/>
+                            <field name="diagnosis_ids" groups="hms.group_hms_practitioner" widget="many2many_tags"/>
+                            <field name="notes" groups="hms.group_hms_practitioner" placeholder="Clinical notes"/>
+                            <field name="treatment_plan" groups="hms.group_hms_practitioner" placeholder="Treatment plan"/>
                         </page>
                         <page string="Prescriptions">
                             <field name="prescription_ids" context="{'default_patient_id': patient_id, 'default_encounter_id': id, 'default_practitioner_id': practitioner_id}">

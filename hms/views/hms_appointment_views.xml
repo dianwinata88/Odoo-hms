@@ -40,7 +40,8 @@
                         <page string="Notes">
                             <field name="notes"/>
                         </page>
-                        <page string="Encounter" invisible="not encounter_id">
+                        <page string="Encounter" invisible="not encounter_id"
+                              groups="hms.group_hms_practitioner,hms.group_hms_pharmacist,hms.group_hms_billing">
                             <field name="encounter_id"/>
                         </page>
                     </notebook>

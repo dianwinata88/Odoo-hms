@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 
-from odoo.exceptions import UserError, ValidationError
-from odoo.tests import TransactionCase, tagged
+from odoo.exceptions import AccessError, UserError, ValidationError
+from odoo.tests import TransactionCase, new_test_user, tagged
 
 
 @tagged("post_install", "-at_install")
@@ -130,3 +130,60 @@ class TestEncounterBilling(TestHmsBase):
         self.assertAlmostEqual(invoice.amount_untaxed, 60.0)
         with self.assertRaises(UserError):
             self.encounter.action_create_invoice()
+
+
+class TestReceptionistPhiAccess(TestHmsBase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.receptionist = new_test_user(
+            cls.env, login="hms_receptionist", groups="hms.group_hms_receptionist"
+        )
+        cls.doctor_user = new_test_user(
+            cls.env, login="hms_doctor", groups="hms.group_hms_practitioner"
+        )
+        cls.practitioner.user_id = cls.doctor_user
+        cls.patient.write(
+            {"allergies": "Penicillin", "blood_type": "o+", "notes": "Sensitive"}
+        )
+        cls.encounter = cls.env["hms.encounter"].create(
+            {
+                "patient_id": cls.patient.id,
+                "practitioner_id": cls.practitioner.id,
+                "chief_complaint": "Chest pain",
+            }
+        )
+        cls.prescription = cls.env["hms.prescription"].create(
+            {
+                "patient_id": cls.patient.id,
+                "encounter_id": cls.encounter.id,
+                "practitioner_id": cls.practitioner.id,
+                "line_ids": [(0, 0, {"product_id": cls.drug.id, "quantity": 1})],
+            }
+        )
+
+    def test_receptionist_cannot_read_clinical_models(self):
+        for model in ("hms.encounter", "hms.prescription", "hms.prescription.line"):
+            with self.assertRaises(AccessError):
+                self.env[model].with_user(self.receptionist).search([])
+
+    def test_receptionist_cannot_read_or_write_clinical_patient_fields(self):
+        patient = self.patient.with_user(self.receptionist)
+        for field in ("allergies", "blood_type", "chronic_conditions", "notes"):
+            with self.assertRaises(AccessError):
+                patient.read([field])
+        with self.assertRaises(AccessError):
+            patient.write({"allergies": "None"})
+
+    def test_receptionist_can_manage_patient_demographics(self):
+        patient = self.env["hms.patient"].with_user(self.receptionist).create(
+            {"name": "Walk In", "phone": "555-0100"}
+        )
+        patient.write({"city": "Springfield"})
+        self.assertEqual(patient.read(["name", "city", "appointment_count"])[0]["city"], "Springfield")
+
+    def test_practitioner_reads_own_clinical_data(self):
+        patient = self.patient.with_user(self.doctor_user)
+        self.assertEqual(patient.read(["allergies"])[0]["allergies"], "Penicillin")
+        encounter = self.encounter.with_user(self.doctor_user)
+        self.assertEqual(encounter.read(["chief_complaint"])[0]["chief_complaint"], "Chest pain")
