@@ -59,6 +59,18 @@ class TestAppointment(TestHmsBase):
         appt.action_checkin()
         self.assertEqual(appt.state, "checkin")
 
+    def test_appointment_illegal_transitions_rejected(self):
+        appt = self._make_appointment(datetime.now() + timedelta(days=1))
+        with self.assertRaises(UserError):
+            appt.action_checkin()
+        with self.assertRaises(UserError):
+            appt.action_done()
+        appt.action_cancel()
+        self.assertEqual(appt.state, "cancel")
+        with self.assertRaises(UserError):
+            appt.action_confirm()
+        self.assertEqual(appt.state, "cancel")
+
     def test_practitioner_overlap_rejected(self):
         start = datetime.now() + timedelta(days=2)
         self._make_appointment(start)
@@ -88,6 +100,47 @@ class TestEncounterBilling(TestHmsBase):
         self.assertEqual(self.encounter.state, "in_progress")
         self.encounter.action_done()
         self.assertEqual(self.encounter.state, "done")
+
+    def test_encounter_illegal_transitions_rejected(self):
+        with self.assertRaises(UserError):
+            self.encounter.action_done()
+        self.encounter.action_start()
+        with self.assertRaises(UserError):
+            self.encounter.action_start()
+        self.encounter.action_done()
+        with self.assertRaises(UserError):
+            self.encounter.action_cancel()
+        self.assertEqual(self.encounter.state, "done")
+
+    def test_prescription_cannot_be_reconfirmed_or_redispensed(self):
+        prescription = self.env["hms.prescription"].create(
+            {
+                "patient_id": self.patient.id,
+                "encounter_id": self.encounter.id,
+                "practitioner_id": self.practitioner.id,
+                "line_ids": [(0, 0, {"product_id": self.drug.id, "quantity": 2})],
+            }
+        )
+        prescription.action_confirm()
+        with self.assertRaises(UserError):
+            prescription.action_confirm()
+        picking = self.env["stock.picking"].create(
+            {
+                "picking_type_id": self.env.ref("stock.picking_type_out").id,
+                "location_id": self.env.ref("stock.stock_location_stock").id,
+                "location_dest_id": self.env.ref("stock.stock_location_customers").id,
+            }
+        )
+        prescription.write({"state": "dispensed", "picking_id": picking.id})
+        with self.assertRaises(UserError):
+            prescription.action_confirm()
+        with self.assertRaises(UserError):
+            prescription.action_cancel()
+        with self.assertRaises(UserError):
+            prescription.action_dispense()
+        prescription.write({"state": "confirmed"})
+        with self.assertRaises(UserError):
+            prescription._check_can_dispense()
 
     def test_prescription_requires_lines(self):
         prescription = self.env["hms.prescription"].create(
