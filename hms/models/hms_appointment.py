@@ -1,5 +1,5 @@
 from odoo import _, api, fields, models
-from odoo.exceptions import ValidationError
+from odoo.exceptions import UserError, ValidationError
 
 
 class HmsAppointment(models.Model):
@@ -88,20 +88,39 @@ class HmsAppointment(models.Model):
                 )
         return super().create(vals_list)
 
+    def _check_transition(self, allowed_states, target_state):
+        for appt in self:
+            if appt.state not in allowed_states:
+                raise UserError(
+                    _(
+                        "Appointment %(name)s cannot be moved from %(state)s to %(target)s.",
+                        name=appt.name,
+                        state=dict(self._fields["state"].selection).get(appt.state),
+                        target=dict(self._fields["state"].selection).get(target_state),
+                    )
+                )
+
     def action_confirm(self):
+        self._check_transition(("draft",), "confirmed")
         self.write({"state": "confirmed"})
 
     def action_checkin(self):
+        self._check_transition(("confirmed",), "checkin")
         self.write({"state": "checkin"})
 
     def action_done(self):
+        self._check_transition(("confirmed", "checkin"), "done")
         self.write({"state": "done"})
 
     def action_cancel(self):
+        self._check_transition(("draft", "confirmed", "checkin"), "cancel")
         self.write({"state": "cancel"})
 
     def action_create_encounter(self):
         self.ensure_one()
+        self._check_transition(("checkin",), "checkin")
+        if self.encounter_id:
+            raise UserError(_("An encounter already exists for this appointment."))
         encounter = self.env["hms.encounter"].create(
             {
                 "patient_id": self.patient_id.id,

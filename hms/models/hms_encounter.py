@@ -74,13 +74,28 @@ class HmsEncounter(models.Model):
                 )
         return super().create(vals_list)
 
+    def _check_transition(self, allowed_states, target_state):
+        for enc in self:
+            if enc.state not in allowed_states:
+                raise UserError(
+                    _(
+                        "Encounter %(name)s cannot be moved from %(state)s to %(target)s.",
+                        name=enc.name,
+                        state=dict(self._fields["state"].selection).get(enc.state),
+                        target=dict(self._fields["state"].selection).get(target_state),
+                    )
+                )
+
     def action_start(self):
+        self._check_transition(("draft",), "in_progress")
         self.write({"state": "in_progress"})
 
     def action_done(self):
+        self._check_transition(("in_progress",), "done")
         self.write({"state": "done"})
 
     def action_cancel(self):
+        self._check_transition(("draft", "in_progress"), "cancel")
         self.write({"state": "cancel"})
 
     def action_new_prescription(self):

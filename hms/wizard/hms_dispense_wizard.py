@@ -25,8 +25,7 @@ class HmsDispenseWizard(models.TransientModel):
     def action_dispense(self):
         self.ensure_one()
         prescription = self.prescription_id
-        if prescription.state != "confirmed":
-            raise UserError(_("Only confirmed prescriptions can be dispensed."))
+        prescription._check_can_dispense()
         partner = self.partner_id or prescription.patient_id.partner_id
         picking_type = self.env["stock.picking.type"].search(
             [
